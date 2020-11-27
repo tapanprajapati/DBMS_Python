@@ -53,14 +53,15 @@ def checkdatatype(metadata,column,value):
 def transformvalue(metadata,dict,column):
     datatype = metadata.columntype(column)
 
+    if dict[column]=='NULL':
+        return
 
     if datatype == META.VARCHAR:
         dict[column] = dict[column][1:-1]
     if datatype == META.INT:
         dict[column] = int(dict[column])
-
     if datatype == META.DOUBLE:
-        dict[column] = int(dict[column])
+        dict[column] = float(dict[column])
 
 def transformcomparator(parsetree):
     if parsetree.conditiontype=="=":

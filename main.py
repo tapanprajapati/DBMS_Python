@@ -4,8 +4,10 @@ import executionengine.use as use
 import parser.basequeryoperation as bqo
 import getpass
 from datastructure.constants import Operation
+from transaction.transaction import Transaction
 
-user = None
+global user
+global active_transaction
 
 def startdatabasesystem():
     authenticate()
@@ -35,6 +37,7 @@ def authenticate():
 
 
 def handle_queries():
+    global active_transaction
     database = None
     try:
         while True:
@@ -44,6 +47,14 @@ def handle_queries():
 
             if database is None and operation is not Operation.USE:
                 print("Database not selected")
+                continue
+
+            if active_transaction != None:
+                active_transaction.execute(query,operation)
+
+                if operation == Operation.COMMIT or operation == Operation.ROLLBACK:
+                    active_transaction = None
+                continue
 
             if operation == Operation.SELECT:
                 select.execute(database,query)
@@ -71,6 +82,15 @@ def handle_queries():
                 pass
             elif operation == Operation.EXIT:
                 break
+            elif operation == Operation.STRT_TRNAS:
+                active_transaction = Transaction(database)
+                print("Transaction Started")
+            elif operation == Operation.COMMIT:
+                print("No active Transaction")
+            elif operation == Operation.ROLLBACK:
+                print("No active Transaction")
+            else:
+                print("Invalid Query")
 
             print()
     except Exception as e:
@@ -78,4 +98,6 @@ def handle_queries():
 
 
 if __name__ == '__main__':
+    user = None
+    active_transaction = None
     startdatabasesystem()

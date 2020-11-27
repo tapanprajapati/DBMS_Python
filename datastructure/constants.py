@@ -1,5 +1,14 @@
 import enum
 
+ALLOWED_COMPARATORS = ['<','>','=','<=','>=']
+ROOT_DIRECTORY = 'dbms/'
+
+START_TRANSACTION = 'START TRANSACTION'
+COMMIT = 'COMMIT'
+ROLLBACK = 'ROLLBACK'
+
+EXCLUSIVE = "X"
+SHARED = "S"
 # comparison operators
 class Compare(enum.Enum):
     EQ = 0
@@ -25,7 +34,6 @@ class Metadata():
     INT = "INT"
     DOUBLE = "DOUBLE"
 
-ALLOWED_COMPARATORS = ['<','>','=','<=','>=']
 
 class Operation(enum.Enum):
     SELECT = 'select'
@@ -38,3 +46,6 @@ class Operation(enum.Enum):
     REVOKE = 'revoke'
     EXIT = 'exit'
     USE = 'use'
+    STRT_TRNAS = 'strttrans'
+    COMMIT = 'cmt'
+    ROLLBACK = 'rlbk'

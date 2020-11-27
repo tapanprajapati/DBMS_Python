@@ -402,7 +402,7 @@ class Table:
 
         directory = self.database
         ext = ".json"
-        file = directory + self.tablename + ext
+        file = directory +"/"+ self.tablename + ext
 
         with open(file,'w') as f:
             json.dump(jsonlist,f)

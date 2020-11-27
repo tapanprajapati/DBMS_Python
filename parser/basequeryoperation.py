@@ -1,4 +1,5 @@
 from datastructure.constants import Operation
+import datastructure.constants as const
 
 def findoperation(query):
     operation = query.split(" ")[0].upper()
@@ -23,3 +24,11 @@ def findoperation(query):
         return Operation.GRANT
     if operation == 'REVOKE':
         return Operation.REVOKE
+
+    if query.upper() == const.START_TRANSACTION:
+        return Operation.STRT_TRNAS
+    if query.upper() == const.COMMIT:
+        return Operation.COMMIT
+    if query.upper() == const.ROLLBACK:
+        return Operation.ROLLBACK
+    return None
