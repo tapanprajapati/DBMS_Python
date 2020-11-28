@@ -74,8 +74,6 @@ class Table:
         if node is None:
             return
 
-        self.sort(column, node.left)
-        self.sort(column, node.right)
 
         if node.parent is not None:
             if node.data[column] > node.parent.data[column] and node.parent.left == node:
@@ -90,6 +88,9 @@ class Table:
                 node.parent.data = data
 
                 self.sort(column, node.parent)
+
+        self.sort(column, node.left)
+        self.sort(column, node.right)
 
     # delete the records that satisfy given condition
     # column = column given in condition
@@ -257,7 +258,7 @@ class Table:
     def __filter(self,table,node,column,value,option):
         if node is None:
             return
-        
+
         if option == constant.Compare.EQ:
             if node.data[column]==value:
                 table.insert(node.copy())
