@@ -7,6 +7,8 @@ START_TRANSACTION = 'START TRANSACTION'
 COMMIT = 'COMMIT'
 ROLLBACK = 'ROLLBACK'
 
+SHOW_TABLES = 'SHOW TABLES'
+
 EXCLUSIVE = "X"
 SHARED = "S"
 # comparison operators
@@ -49,3 +51,5 @@ class Operation(enum.Enum):
     STRT_TRNAS = 'strttrans'
     COMMIT = 'cmt'
     ROLLBACK = 'rlbk'
+    DESC = 'desc'
+    SHW_TBLS = 'shwtbls'

@@ -35,6 +35,7 @@ def execute(database,query,transaction = None):
                     else:
                         raise Exception("Table {} is locked by a transaction".format(parsetree.table))
             table.insert(record)
+        print("1 Row inserted successfully")
     except Exception as e:
         print(e)
 

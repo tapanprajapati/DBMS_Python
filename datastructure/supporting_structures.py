@@ -72,6 +72,9 @@ class Metadata:
     def columntype(self, column):
         return self.columns[column][META.COLUMNS_TYPE]
 
+    def columnlength(self, column):
+        return self.columns[column][META.COLUMNS_LENGTH]
+
     def hasprimarykey(self,column):
         pass
 

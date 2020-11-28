@@ -50,6 +50,17 @@ def checkdatatype(metadata,column,value):
         except:
             raise Exception("For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
 
+def validatelength(metadata,column,value):
+
+    allowedlength = metadata.columnlength(column)
+    givenlength = len(str(value))
+
+    if metadata.columntype(column) == constants.Metadata.DOUBLE:
+        givenlength = len(str(value).split(".")[0])
+
+    if givenlength > allowedlength:
+        raise Exception("Length Exceeded: {}\nAllowed: {}\nProvided: {}".format(column,allowedlength,givenlength))
+
 def transformvalue(metadata,dict,column):
     datatype = metadata.columntype(column)
 

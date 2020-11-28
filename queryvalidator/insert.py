@@ -16,6 +16,7 @@ def validatedata(parsetree):
 
         validator.checkdatatype(metadata,column,parsetree.columnvaluepair[column])
         validator.transformvalue(metadata,parsetree.columnvaluepair,column)
+        validator.validatelength(metadata,column,parsetree.columnvaluepair[column])
 
 
 def validate(parsetree):

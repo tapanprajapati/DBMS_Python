@@ -24,6 +24,8 @@ def findoperation(query):
         return Operation.GRANT
     if operation == 'REVOKE':
         return Operation.REVOKE
+    if operation == "DESC":
+        return Operation.DESC
 
     if query.upper() == const.START_TRANSACTION:
         return Operation.STRT_TRNAS
@@ -31,4 +33,6 @@ def findoperation(query):
         return Operation.COMMIT
     if query.upper() == const.ROLLBACK:
         return Operation.ROLLBACK
+    if query.upper() == const.SHOW_TABLES:
+        return Operation.SHW_TBLS
     return None
