@@ -114,6 +114,11 @@ class Table:
                 self.__deletenode(searchednode)
                 searchednode = searchednode.right
 
+    # Deleting the complete table
+    def deletetable(self):
+        if self.root is not None:
+            self.root = None
+
     # insert new record in the table
     # record = object of type Record
     def insert(self, record):
