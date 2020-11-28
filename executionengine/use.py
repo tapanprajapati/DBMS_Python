@@ -1,5 +1,5 @@
 import os.path
-from parser import use
+from queryparser import use
 def execute(query,user):
 
     try:

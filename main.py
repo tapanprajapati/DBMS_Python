@@ -1,11 +1,13 @@
-from executionengine import select,use,infoqueries,insert
-import parser.basequeryoperation as bqo
-import getpass
+from executionengine import select,use,infoqueries,insert,update,create,grant,revoke
+import queryparser.basequeryoperation as bqo
+import accessuser.authentication as authentication
 from datastructure.constants import Operation
 from transaction.transaction import Transaction
 
+
 global user
 global active_transaction
+
 
 def startdatabasesystem():
     authenticate()
@@ -14,24 +16,20 @@ def startdatabasesystem():
 
 
 def authenticate():
-
     username = str(input("Username: "))
-
-    # check username, if does not exists ask to sign up
-
-    # if not userexists(username):
-        # signup(username) # password has to be encrypted
-
-    # otherwise read password
-    # else:
-    password = getpass.getpass("Password: ")
-
-        # valid =  authenticateuser(username,password)
-        # if not valid:
-            # print('Invalid Password')
-            # exit(0)
-        # else:
-            # user = username
+    if not authentication.userexist(username):
+        print("User does not exist. Create a new account...")
+        password = str(input("Please input password: "))
+        authentication.signup(username, password)
+    else:
+        password = str(input("Password: "))
+        valid = authentication.authenticateuser(username, password)
+        if not valid:
+            print('Invalid Password')
+            exit(0)
+        else:
+            print("Welcome!")
+            user = username
 
 
 def handle_queries():
@@ -42,9 +40,9 @@ def handle_queries():
 
         operation = bqo.findoperation(query)
 
-        if database is None and operation is not Operation.USE:
-            print("Database not selected\n")
-            continue
+        # if database is None and operation is not Operation.USE:
+        #     print("Database not selected\n")
+        #     continue
 
         if active_transaction != None:
             active_transaction.execute(query,operation)
@@ -58,8 +56,7 @@ def handle_queries():
         elif operation == Operation.INSERT:
             insert.execute(database,query)
         elif operation == Operation.UPDATE:
-            # execution for update command
-            pass
+            update.execute(database,query)
         elif operation == Operation.DELETE:
             # execution for update command
             pass
@@ -67,16 +64,19 @@ def handle_queries():
             # execution for update command
             pass
         elif operation == Operation.CREATE:
-            # execution for update command
-            pass
+            create.execute(query)
+            # if query.split()[1] == "DATABASE":
+            #     database = query.split()[2]
+            #     path = "dbms\\" + database + "\\permission.json"
+            #     permission = {"owner": user, "user":[]}
+            #     with open(path, "w", encoding="utf-8") as file:
+            #         file.write(json.dumps(permission, indent=4, ensure_ascii=False))
         elif operation == Operation.USE:
             database = use.execute(query,user)
         elif operation == Operation.GRANT:
-            # execution for update command
-            pass
+            grant.execute(query)
         elif operation == Operation.REVOKE:
-            # execution for update command
-            pass
+            revoke.execute(query)
         elif operation == Operation.SHW_TBLS:
             infoqueries.showtables(database)
         elif operation == Operation.DESC:
@@ -100,3 +100,4 @@ if __name__ == '__main__':
     user = None
     active_transaction = None
     startdatabasesystem()
+

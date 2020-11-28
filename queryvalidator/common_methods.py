@@ -102,3 +102,11 @@ def validatecondition(parsetree):
 
     transformvalue(metadata,parsetree.condition,column)
     transformcomparator(parsetree)
+
+
+def validatecolumnvaluepair(parsetree):
+    metadata = Metadata(parsetree.database, parsetree.table)
+    for pair in parsetree.columnvaluepair:
+        column = pair.key
+        if not metadata.hascolumn(column):
+            raise Exception("Column '{}' does not exist in table '{}'".format(column, parsetree.table))

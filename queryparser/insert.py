@@ -1,5 +1,5 @@
 import re
-from parser.parsetree import ParseTree
+from queryparser.parsetree import ParseTree
 
 def __gettablename(query)->str:
 

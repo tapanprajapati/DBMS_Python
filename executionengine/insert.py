@@ -1,5 +1,5 @@
 from datastructure.supporting_structures import Record
-import parser.insert as parseinsert
+import queryparser.insert as parseinsert
 import queryvalidator.insert as validateinsert
 from datastructure.table import Table
 from transaction import helper
