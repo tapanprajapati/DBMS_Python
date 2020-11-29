@@ -47,9 +47,18 @@ class Table:
         table = Table()
         table.metadata = self.metadata
 
-        self.sort(column,self.root)
-        self.__filter(table,self.root,column,value,option)
-        
+        # self.__filter(table,self.root,column,value,option)
+
+        for node in self.iterator():
+            if (option==constant.Compare.EQ or option==constant.Compare.LE or option==constant.Compare.GE) and node.data[column]==value:
+                table.insert(node.copy())
+
+            if (option==constant.Compare.LT or option==constant.Compare.LE) and node.data[column]<value:
+                table.insert(node.copy())
+
+            if (option==constant.Compare.GT or option==constant.Compare.GE) and node.data[column]>value:
+                table.insert(node.copy())
+
         return table
 
     # under development
@@ -66,54 +75,22 @@ class Table:
             node.updatedata(columnvaluepairs)
             node.updateoriginal()
 
-    # sort the data structure according to given column
-    # column = column to use for sorting
-    # node = starting point
-    # recursive function
-    def sort(self, column, node):
-        if node is None:
-            return
-
-
-        if node.parent is not None:
-            if node.data[column] > node.parent.data[column] and node.parent.left == node:
-                data = node.data
-                node.data = node.parent.data
-                node.parent.data = data
-
-                self.sort(column, node.parent)
-            elif node.data[column] < node.parent.data[column] and node.parent.right == node:
-                data = node.data
-                node.data = node.parent.data
-                node.parent.data = data
-
-                self.sort(column, node.parent)
-
-        self.sort(column, node.left)
-        self.sort(column, node.right)
-
     # delete the records that satisfy given condition
     # column = column given in condition
     # value = value of column
     # option = comparison operator =,<,>,<=,>= , default is =
     def delete(self, column, value, option=constant.Compare.EQ):
 
-        if self.sort_col != column:
-            self.sort(column, self.root)
-            self.sort_col = column
+        for node in self.iterator():
+            if (option == constant.Compare.EQ or option == constant.Compare.LE or option == constant.Compare.GE) and \
+                    node.data[column] == value:
+                self.__deletenode(node)
 
-        searchednode = self.__search(column, value, self.root)
+            if (option == constant.Compare.LT or option == constant.Compare.LE) and node.data[column] < value:
+                self.__deletenode(node)
 
-        if option == constant.Compare.GE or option == constant.Compare.GT:
-            self.__deleterange(searchednode,self.root,column,constant.Compare.GT)
-        elif option == constant.Compare.LE or option == constant.Compare.LT:
-            self.__deleterange(searchednode,self.root,column, constant.Compare.LT)
-
-        if option == constant.Compare.EQ or option == constant.Compare.GE or option == constant.Compare.LE:
-
-            while searchednode is not None and searchednode.data[column] == value:
-                self.__deletenode(searchednode)
-                searchednode = searchednode.right
+            if (option == constant.Compare.GT or option == constant.Compare.GE) and node.data[column] > value:
+                self.__deletenode(node)
 
     # Deleting the complete table
     def deletetable(self):
@@ -128,57 +105,6 @@ class Table:
             return
         self.__insertrecord(record, self.root)
         self.__balance(self.root)
-
-    # these all methods are helper methods to execute above methods
-    def __search(self, column, value, node) -> Record:
-
-        if self.sort_col != column:
-            self.sort(column, self.root)
-            self.sort_col = column
-        if node is None:
-            return None
-
-        if node.data[column] == value:
-            return node
-
-        if value < node.data[column]:
-            return self.__search(column, value, node.left)
-
-        return self.__search(column, value, node.right)
-
-    def __deleterange(self,searchednode, node, column,option):
-        if node is None:
-            return
-        if option==constant.Compare.GT:
-            if searchednode.data[column] <= node.data[column]:
-                if node.right is not None:
-                    node.right.parent = None
-                    node.right = None
-
-                if searchednode==node:
-                    if searchednode != self.root and searchednode.parent.data[column]>node.data[column]:
-                        self.__swapparent(searchednode.parent,searchednode)
-                        self.__deleterange(searchednode,node.parent,column,option)
-                    return
-
-                self.__deleterange(searchednode,node.left,column,option)
-            else:
-                self.__deleterange(searchednode,node.right,column,option)
-        else:
-            if searchednode.data[column] >= node.data[column]:
-                if node.left is not None:
-                    node.left.parent = None
-                    node.left = None
-
-                if searchednode == node:
-                    if searchednode != self.root  and searchednode.parent.data[column]<node.data[column]:
-                        self.__swapparent(searchednode.parent, searchednode)
-                        self.__deleterange(searchednode,node.parent,column,option)
-                    return
-
-                self.__deleterange(searchednode, node.right, column, option)
-            else:
-                self.__deleterange(searchednode,node.left,column,option)
 
     def __deletenode(self, searchednode):
 
@@ -243,7 +169,6 @@ class Table:
 
         if nodevalue == recordvalue:
             raise Exception("Primary key constraint violation")
-            return
 
         if recordvalue < nodevalue:
             if node.left is None:
@@ -259,49 +184,6 @@ class Table:
             return
         self.__insertrecord(record, node.right)
         return
-    
-    def __filter(self,table,node,column,value,option):
-        if node is None:
-            return
-
-        if option == constant.Compare.EQ:
-            if node.data[column]==value:
-                table.insert(node.copy())
-                return
-            if value < node.data[column]:
-                self.__filter(table,node.left,column,value,option)
-            elif value > node.data[column]:
-                self.__filter(table,node.right,column,value,option)
-                
-        elif option== constant.Compare.LT or option == constant.Compare.LE:
-            
-            if value == node.data[column]:
-                if option == constant.Compare.LE:
-                    table.insert(node.copy())
-                self.__filter(table,node.left,column,value,option)
-                
-            elif value > node.data[column]:
-                table.insert(node.copy())
-                self.__filter(table,node.left,column,value,option)
-                self.__filter(table,node.right,column,value,option)
-
-            elif value < node.data[column]:
-                self.__filter(table, node.left, column, value, option)
-
-        elif option == constant.Compare.GT or option == constant.Compare.GE:
-
-            if value == node.data[column]:
-                if option == constant.Compare.GE:
-                    table.insert(node.copy())
-                self.__filter(table, node.right, column, value, option)
-
-            elif value < node.data[column]:
-                table.insert(node.copy())
-                self.__filter(table, node.left, column, value, option)
-                self.__filter(table, node.right, column, value, option)
-
-            elif value > node.data[column]:
-                self.__filter(table, node.right, column, value, option)
 
     def __balance(self, node):
         if node is None:

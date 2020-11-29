@@ -1,7 +1,7 @@
 from executionengine import select,use,infoqueries,insert, delete, drop
 import parser.basequeryoperation as bqo
 import getpass
-from datastructure.constants import Operation
+from datastructure.constants import Operation,ROOT_DIRECTORY
 from transaction.transaction import Transaction
 
 global user

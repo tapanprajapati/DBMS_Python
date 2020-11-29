@@ -14,21 +14,21 @@ def execute(database, query, transaction=None):
 
         lock = helper.typeoflock(database, parsetree.table)
         if transaction==None:
-            if lock == constants.EXCLUSIVE:
-                raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+            if lock !=None:
                 logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
+                raise Exception("Table {} is locked by a transaction".format(parsetree.table))
             table = Table(database, parsetree.table)
         else:
             if parsetree.table in transaction.accessed_tables.keys():
                 table = transaction.accessed_tables[parsetree.table]
             else:
-                if lock == None or lock == constants.SHARED:
+                if lock !=None:
                     table = Table(database, parsetree.table, parsetree.columns)
                     helper.locktable(database, parsetree.table, constants.SHARED)
                     transaction.accessed_tables[parsetree.table] = table
                 else:
-                    raise Exception("Table {} is locked by a transaction".format(parsetree.table))
                     logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
+                    raise Exception("Table {} is locked by a transaction".format(parsetree.table))
         records_before_deletion = len(table.iterator())
         if parsetree.condition is not None:
             column = list(parsetree.condition.keys())[0]
@@ -43,7 +43,9 @@ def execute(database, query, transaction=None):
             table.deletetable()
             print(f"{parsetree.table} table has been successfully deleted")
             logger.get_event_logger().info(f"{parsetree.table} table has been successfully deleted")
-        table.save()
+
+        if transaction==None:
+            table.save()
 
     except Exception as e:
         print(e)

@@ -3,7 +3,7 @@ import re
 
 
 def validate_query(query):
-    pattern = re.compile('DROP\s+TABLE(.*?)\s+;')
+    pattern = re.compile('DROP\s+TABLE(.*?)')
     if pattern.match(query):
         return True
     else:
@@ -11,14 +11,14 @@ def validate_query(query):
 
 
 def extract_table_name(query):
-    name = re.search('TABLE(.*);', query)
-    print(f"the table name is : {name.group(1).strip()}")
+    name = re.search('TABLE(.*)', query)
     return name.group(1).strip()
 
 
 def parse(drop_query):
     parsetree = ParseTree()
     drop_query = drop_query.upper()
+    drop_query = drop_query.replace(";","")
     drop_query = re.sub(r"\s+", " ", drop_query)
     drop_query.strip()
     if not validate_query(drop_query):

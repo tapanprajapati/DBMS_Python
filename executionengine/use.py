@@ -1,4 +1,5 @@
 import os.path
+from datastructure.constants import ROOT_DIRECTORY
 from parser import use
 def execute(query,user):
 
@@ -7,9 +8,9 @@ def execute(query,user):
 
         # validate permission for user
         # validateuser(database,user)
-        if os.path.exists(database):
+        if os.path.exists(ROOT_DIRECTORY+"/"+database):
             print("Database Selected: '{}'".format(database))
-            return database
+            return ROOT_DIRECTORY+"/"+database
         print("Database does not exist '{}'".format(database))
         return None
     except Exception as e:
