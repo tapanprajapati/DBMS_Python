@@ -1,4 +1,4 @@
-from executionengine import select,use,infoqueries,insert
+from executionengine import select,use,infoqueries,insert, delete, drop
 import parser.basequeryoperation as bqo
 import getpass
 from datastructure.constants import Operation
@@ -61,11 +61,9 @@ def handle_queries():
             # execution for update command
             pass
         elif operation == Operation.DELETE:
-            # execution for update command
-            pass
+            delete.execute(database,query)
         elif operation == Operation.DROP:
-            # execution for update command
-            pass
+            drop.execute(database, query)
         elif operation == Operation.CREATE:
             # execution for update command
             pass
