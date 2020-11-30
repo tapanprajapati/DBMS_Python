@@ -1,4 +1,4 @@
-from parser.parsetree import ParseTree
+from queryparser.parsetree import ParseTree
 import re
 
 

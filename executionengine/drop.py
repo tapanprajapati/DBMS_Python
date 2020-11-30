@@ -1,8 +1,7 @@
-import parser.drop as parsedrop
+import queryparser.drop as parsedrop
 import queryvalidator.drop as validatedrop
 from transaction import helper
 import os
-
 
 def execute(database, query, transaction=None):
     try:

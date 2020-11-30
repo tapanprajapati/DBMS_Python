@@ -3,7 +3,7 @@ from datastructure.supporting_structures import Metadata
 from prettytable import PrettyTable
 from datastructure.constants import Metadata as META
 from queryvalidator import common_methods
-from parser import desc
+from queryparser import desc
 
 def gettables(database):
     tables = []

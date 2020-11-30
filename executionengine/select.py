@@ -1,4 +1,4 @@
-import parser.select as parseselect
+import queryparser.select as parseselect
 import queryvalidator.select as validateselect
 from datastructure.table import Table
 from prettytable import PrettyTable

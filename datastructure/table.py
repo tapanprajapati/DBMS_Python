@@ -75,6 +75,7 @@ class Table:
             node.updatedata(columnvaluepairs)
             node.updateoriginal()
 
+        return len(filteredtable.iterator())
     # delete the records that satisfy given condition
     # column = column given in condition
     # value = value of column

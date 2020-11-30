@@ -1,4 +1,4 @@
-from parser.parsetree import ParseTree
+from queryparser.parsetree import ParseTree
 def parse(query):
     query = query.upper()
     parts = query.split(" ")

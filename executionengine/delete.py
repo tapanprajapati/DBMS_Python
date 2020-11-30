@@ -1,4 +1,4 @@
-import parser.delete as parsedelete
+import queryparser.delete as parsedelete
 import queryvalidator.delete as validatedelete
 from datastructure.table import Table
 from transaction import helper
