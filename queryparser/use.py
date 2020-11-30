@@ -1,5 +1,6 @@
 def parse(query):
     query = query.upper()
+    query = query.replace(";","")
 
     parts = query.split(" ")
 

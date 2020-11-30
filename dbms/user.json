@@ -1,18 +1,9 @@
 [
-    {
-        "name": "Zongyu",
-        "passward": "123456"
-    },
-    {
-        "name": "Wu",
-        "passward": "654321"
-    },
-    {
-        "name": "Tapan",
-        "passward": "000000"
-    },
-    {
-        "name": "abc",
-        "passward": "zxc"
-    }
+  {
+    "name": "Tapan",
+    "password": "670b14728ad9902aecba32e22fa4f6bd"
+  },{
+    "name": "A",
+    "password": "670b14728ad9902aecba32e22fa4f6bd"
+  }
 ]

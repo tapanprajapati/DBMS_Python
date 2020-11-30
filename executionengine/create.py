@@ -1,9 +1,9 @@
 from queryparser import create
 
 
-def execute(query):
+def execute(database,query,user):
     try:
-        create.parse(query)
+        create.parse(database,query,user)
     except Exception as e:
         print(e)
         return None

@@ -1,28 +1,33 @@
-from executionengine import select,use,infoqueries,insert,update,create,grant,revoke
+from executionengine import select, use, infoqueries, insert, update, create, grant, revoke, delete, drop
 import queryparser.basequeryoperation as bqo
 import accessuser.authentication as authentication
-from datastructure.constants import Operation
+import getpass
+from datastructure.constants import Operation, ROOT_DIRECTORY
 from transaction.transaction import Transaction
 
-
 global user
-global active_transaction
 
 
 def startdatabasesystem():
     authenticate()
-
     handle_queries()
 
 
 def authenticate():
+    global user
     username = str(input("Username: "))
     if not authentication.userexist(username):
         print("User does not exist. Create a new account...")
-        password = str(input("Please input password: "))
-        authentication.signup(username, password)
+        password = getpass.getpass("Enter Password: ")
+        re_password = getpass.getpass("Confirm Password: ")
+
+        if password==re_password:
+            authentication.signup(username, password)
+            print("Signup Successful")
+        else:
+            print("Passwords Do Not Match!!! Try Again")
     else:
-        password = str(input("Password: "))
+        password = getpass.getpass("Enter Password: ")
         valid = authentication.authenticateuser(username, password)
         if not valid:
             print('Invalid Password')
@@ -33,54 +38,53 @@ def authenticate():
 
 
 def handle_queries():
-    global active_transaction
+    global user
     database = None
+    active_transaction = None
     while True:
         query = str(input(">> "))
 
         operation = bqo.findoperation(query)
 
-        # if database is None and operation is not Operation.USE:
-        #     print("Database not selected\n")
-        #     continue
+
+        if operation == Operation.EXIT:
+            break
+        if "CREATE DATABASE" in query.upper():
+            create.execute(database,query,user)
+        elif operation == Operation.GRANT:
+            grant.execute(query,user)
+        elif operation == Operation.REVOKE:
+            revoke.execute(query,user)
+
+        if database is None and operation is not Operation.USE:
+            print("Database not selected\n")
+            continue
 
         if active_transaction != None:
-            active_transaction.execute(query,operation)
+            active_transaction.execute(query, operation)
 
             if operation == Operation.COMMIT or operation == Operation.ROLLBACK:
                 active_transaction = None
             continue
 
         if operation == Operation.SELECT:
-            select.execute(database,query)
+            select.execute(database, query)
         elif operation == Operation.INSERT:
-            insert.execute(database,query)
+            insert.execute(database, query)
         elif operation == Operation.UPDATE:
-            update.execute(database,query)
+            update.execute(database, query)
         elif operation == Operation.DELETE:
-            # execution for update command
-            pass
+            delete.execute(database, query)
         elif operation == Operation.DROP:
-            # execution for update command
-            pass
+            drop.execute(database, query)
         elif operation == Operation.CREATE:
-            create.execute(query)
-            # if query.split()[1] == "DATABASE":
-            #     database = query.split()[2]
-            #     path = "dbms\\" + database + "\\permission.json"
-            #     permission = {"owner": user, "user":[]}
-            #     with open(path, "w", encoding="utf-8") as file:
-            #         file.write(json.dumps(permission, indent=4, ensure_ascii=False))
+            create.execute(database,query,user)
         elif operation == Operation.USE:
-            database = use.execute(query,user)
-        elif operation == Operation.GRANT:
-            grant.execute(query)
-        elif operation == Operation.REVOKE:
-            revoke.execute(query)
+            database = use.execute(query, user)
         elif operation == Operation.SHW_TBLS:
             infoqueries.showtables(database)
         elif operation == Operation.DESC:
-            infoqueries.describe(database,query)
+            infoqueries.describe(database, query)
         elif operation == Operation.STRT_TRNAS:
             active_transaction = Transaction(database)
             print("Transaction Started")
@@ -88,8 +92,6 @@ def handle_queries():
             print("No active Transaction")
         elif operation == Operation.ROLLBACK:
             print("No active Transaction")
-        elif operation == Operation.EXIT:
-            break
         else:
             print("Invalid Query")
 
@@ -98,6 +100,4 @@ def handle_queries():
 
 if __name__ == '__main__':
     user = None
-    active_transaction = None
     startdatabasesystem()
-

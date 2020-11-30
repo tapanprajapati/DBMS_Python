@@ -1,6 +1,5 @@
 from datastructure.constants import Operation
-import executionengine.insert as insert
-import executionengine.select as select
+from executionengine import insert,select,delete
 import transaction.helper as helper
 
 class Transaction():
@@ -17,7 +16,7 @@ class Transaction():
             # execution for update command
             pass
         elif operation == Operation.DELETE:
-            # execution for update command
+            delete.execute(self.database, query,self)
             pass
         elif operation == Operation.DROP:
             print("Cannot delete resource during transaction")

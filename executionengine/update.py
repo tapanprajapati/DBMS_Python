@@ -13,8 +13,9 @@ def execute(database, query):
 
         column = list(parsetree.condition.keys())[0]
         value = parsetree.condition[column]
-        table.update(parsetree.columnvaluepair, column, value, parsetree.conditiontype)
+        rows = table.update(parsetree.columnvaluepair, column, value, parsetree.conditiontype)
 
+        print("{} Rows Updated".format(rows))
         table.save()
     except Exception as e:
         print(e)

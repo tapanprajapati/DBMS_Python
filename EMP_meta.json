@@ -1,0 +1,25 @@
+{
+    "columns": [
+        {
+            "name": "ID",
+            "type": "INT",
+            "length": 8
+        },
+        {
+            "name": "FIRSTNAME",
+            "type": "VARCHAR",
+            "length": 50
+        },
+        {
+            "name": "LASTNAME",
+            "type": "VARCHAR",
+            "length": 50
+        },
+        {
+            "name": "SALARY",
+            "type": "DOUBLE",
+            "length": 16
+        }
+    ],
+    "keys": {}
+}

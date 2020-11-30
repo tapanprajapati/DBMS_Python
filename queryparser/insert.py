@@ -24,9 +24,10 @@ def __getcolumns(query):
     return columns
 
 def __getvalues(query):
-    values_re = re.search(r'VALUES.*\(.*\)', query).group()
+    values_re = re.search(r'VALUES.*\(.*\);?', query).group()
     values_re = re.sub(r'VALUES.*\(',"",values_re)
     values_raw = values_re.replace(")","").strip()
+    values_raw = values_raw.replace(";","").strip()
 
     values = values_raw.split(",")
 
@@ -53,5 +54,3 @@ def parse(query):
     parsetree.columnvaluepair = __getdata(query)
 
     return parsetree
-
-# parse("insert into emp(id,firstname,lastname,salary) values(8,'Tapan','Prajapati',2000)")

@@ -13,6 +13,7 @@ def __gettablename(query):
         tablename_re = re.search(r'FROM .*',query).group()
 
         tablename = tablename_re.replace("FROM","").strip()
+        tablename = tablename.replace(";","").strip()
 
     return tablename
 
@@ -34,9 +35,10 @@ def __getcondition(query):
     if query.find("WHERE")==-1:
         return None,None
 
-    condition_re = re.search(r'WHERE .*',query).group()
+    condition_re = re.search(r'WHERE .*;?',query).group()
 
     condition_raw = condition_re.replace("WHERE","").strip()
+    condition_raw = condition_raw.replace(";","").strip()
 
     comparator = ""
     for operator in constants.ALLOWED_COMPARATORS:
@@ -60,8 +62,6 @@ def __getcondition(query):
 
     conditiondic = {condition[0]: condition[1]}
 
-    # print(conditiondic,comparator)
-
     return conditiondic,comparator
 
 def parse(query):
@@ -71,13 +71,7 @@ def parse(query):
 
     parsetree.table = __gettablename(query)
     parsetree.columns = __getcolumns(query)
-    # __getcondition(query)
     parsetree.condition,parsetree.conditiontype = __getcondition(query)
 
-    # print(parsetree.table)
-    # print(parsetree.columns)
-    # print(parsetree.condition)
 
     return parsetree
-
-# parse("SELECT a , b ,  c   from tapan where a='1'")

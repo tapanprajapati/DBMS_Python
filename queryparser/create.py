@@ -1,6 +1,8 @@
 import re
 import json
 import os
+from queryparser.parsetree import ParseTree
+from queryvalidator import common_methods
 
 
 def __getdatabasename(query):
@@ -9,72 +11,122 @@ def __getdatabasename(query):
     return databasename
 
 
-def __gettablename(query):
+def __gettablename(database,query):
     tablename_re = re.search(r'TABLE .*\(', query).group()
     tablename = tablename_re.replace("TABLE", "").strip()
-    tablename = tablename[:tablename.find('(')].strip()
+    tablename = tablename[:tablename.find("(")].strip()
+
+    if os.path.exists(database+"/"+tablename+".json"):
+        raise Exception("Table {} Already Exists".format(tablename))
     return tablename
 
 
-def __getcolumns(query):
-    columns = re.findall(r'[(](.*)[)]', query)[0]
-    columns = re.findall(r'(?:[^,(]|\([^)]*\))+', columns)
-    columns = list(map(lambda x: x.strip(), columns))
-    metadata = {"columns":[], "keys": {}}
+def __getcolumns(database,query):
+    columns = re.search(r'\(.*\)', query).group()
+    columns = columns[1:-1].strip().split(",")
+    columns = list(map(lambda x:x.strip(),columns))
+    metadata = {"columns":[], "keys": {"primary":[],"foreign":[]}}
+    columns_names = []
     columnlist = []
     for e in columns:
         pair = list(map(lambda x: x.strip(), e.split()))
         if pair[0] == "PRIMARY":
-            primarykey = re.findall(r'[(](.*)[)]', e)[0].split(",")
+            primarykey = re.search(r'\(.*\)', e).group()
+            primarykey = primarykey[1:-1].split(",")
             primarykey = list(map(lambda x: x.strip(), primarykey))
-            metadata["keys"] = {"primary":primarykey}
-        column = {"name": pair[0]}
-        if pair[1].find('(') > 0:
-            datatype = pair[1][:pair[1].find('(')]
+
+            for key in primarykey:
+                if key not in columns_names:
+                    raise Exception("Primary Key {} is Unknown".format(key))
+
+            metadata["keys"]["primary"] = primarykey
+        elif pair[0] == "FOREIGN":
+            parts = e.split()
+            parts = list(map(lambda x: x.strip(), parts))
+
+            col = parts[2][1:-1]
+            if col not in columns_names:
+                    raise Exception("Foreign Key {} is Unknown".format(col))
+
+            ref_table = parts[4][:parts[4].find("(")]
+            ref_col = parts[4][parts[4].find("(")+1:-1]
+
+            parsetree = ParseTree()
+            parsetree.table = ref_table
+            parsetree.columns = [ref_col]
+            parsetree.database = database
+
+            common_methods.validatetable(parsetree)
+            common_methods.validatecolumns(parsetree)
+
+            foreign_key = {"name":col,"ref_table":ref_table,"ref_column":ref_col}
+
+            metadata["keys"]["foreign"].append(foreign_key)
+        elif "INT" in pair[1]:
+            column = {}
+            column["name"] = pair[0]
+            datatype = "INT"
+            length = re.search(r'\(.*\)', e).group()
+            length = int(length[1:-1])
             column["type"] = datatype
-            length = pair[1][pair[1].find('(') + 1:pair[1].find(')')]
             column["length"] = int(length)
+            columnlist.append(column)
+            columns_names.append(pair[0])
+        elif "VARCHAR" in pair[1]:
+            column = {}
+            column["name"] = pair[0]
+            datatype = "VARCHAR"
+            length = re.search(r'\(.*\)', e).group()
+            length = int(length[1:-1])
+            column["type"] = datatype
+            column["length"] = int(length)
+            columnlist.append(column)
+            columns_names.append(pair[0])
+        elif "DOUBLE" in pair[1]:
+            column = {}
+            column["name"] = pair[0]
+            datatype = "DOUBLE"
+            length = re.search(r'\(.*\)', e).group()
+            length = int(length[1:-1])
+            column["type"] = datatype
+            column["length"] = int(length)
+            columnlist.append(column)
+            columns_names.append(pair[0])
         else:
-            column["type"] = pair[1]
-            if pair[1] == 'INT':
-                column["length"] = 8
-            elif pair[1] == 'DOUBLE':
-                column["length"] = 16
-            elif pair[1] == 'VARCHAR':
-                column["length"] = 50
-        columnlist.append(column)
+            raise Exception("Error in Create Query")
         metadata["columns"] = columnlist
+
     return metadata
 
 
-def parse(query):
+def parse(database,query,user):
     query = query.upper()
     parts = query.split()
     if parts[1] == "DATABASE":
         if len(parts) != 3:
             raise Exception("Invalid 'Create Database' query")
-        # os.chdir(os.path.abspath(os.path.dirname(os.getcwd())))
         try:
-            os.mkdir("dbms\\" + __getdatabasename(query))
-            os.chdir("dbms\\" + __getdatabasename(query))
-            file = open("permission.json", "w")
+            database = __getdatabasename(query)
+            os.mkdir("dbms/" + database)
+            file = open("dbms/"+database+"/permission.json", "w")
+            permission = {"owner":user,"users":[]}
+            json.dump(permission,file)
             file.close()
+
+            file = open("dbms/" + database + "/locks.json", "w")
+            file.write("[]")
+            file.close()
+
+            print("Database {} Created Successfully".format(database))
         except Exception as e:
             print(e)
     elif parts[1] == "TABLE":
-        tablename = __gettablename(query)
-        columnlist = __getcolumns(query)
-        with open(tablename + "_meta.json", "w", encoding="utf-8") as file:
+        tablename = __gettablename(database,query)
+        columnlist = __getcolumns(database,query)
+        with open(database+"/"+tablename + "_meta.json", "w", encoding="utf-8") as file:
             file.write(json.dumps(columnlist, indent=4, ensure_ascii=False))
-        file = open(tablename + ".json", "w", encoding="utf-8")
+        file = open(database+"/"+tablename + ".json", "w", encoding="utf-8")
         file.close()
+        print("Table {} Created Successfully".format(tablename))
     else:
         raise Exception("Invalid 'Create' query structure")
-
-
-
-
-
-
-#parse("CREATE DATABASE GROUP9")
-#parse("CREATE TABLE emp (id INT, name VARCHAR(45), PRIMARY KEY (id, name))")
