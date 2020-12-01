@@ -26,7 +26,7 @@ def generating_erd(database):
                     foreign_key_name = foreign_key_detail['name']
                     foreign_key_table = foreign_key_detail['ref_table']
                     file.write(f"\nThe Foreign key is : {foreign_key_name}. It is the primary key for the table : {foreign_key_table}")
-                    if primary_key == foreign_key_name:
+                    if foreign_key_name in primary_key:
                         file.write(f"\nThe Cardinality between the \"{name.group(1).strip()}\" table and \"{foreign_key_table}\" table is : 1 to 1")
                     else:
                         file.write(f"\nThe Cardinality between the \"{name.group(1).strip()}\" table and \"{foreign_key_table}\" table is : 1 to Many")
