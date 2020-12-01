@@ -34,5 +34,6 @@ def generating_erd(database):
                 file.write(" -"*35)
         file.close()
         logger.get_event_logger().info(f"Generated ERD")
+        return
     except Exception as e:
         print(e)
