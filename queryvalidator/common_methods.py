@@ -1,6 +1,7 @@
 from datastructure.constants import Metadata as META
 from datastructure.supporting_structures import Metadata
 import datastructure.constants as constants
+import logger.querylogging as logger
 
 def validatetable(parsetree):
         directory = parsetree.database
@@ -12,6 +13,8 @@ def validatetable(parsetree):
 
         except:
             raise Exception("Table Not Found: "+parsetree.table)
+            logger.get_event_logger().warning(
+                "Table Not Found: "+parsetree.table)
 
 def validatecolumns(parsetree):
 
@@ -23,6 +26,7 @@ def validatecolumns(parsetree):
     for column in parsetree.columns:
         if not metadata.hascolumn(column):
             raise Exception("Column '{}' does not exist in table '{}'".format(column,parsetree.table))
+            logger.get_event_logger().warning("Column '{}' does not exist in table '{}'".format(column,parsetree.table))
 
 def checkdatatype(metadata,column,value):
 
@@ -34,14 +38,20 @@ def checkdatatype(metadata,column,value):
     if datatype== META.VARCHAR:
         if value[0]!=value[-1] or (value[0]!="'" and value[0]!='"'):
             raise Exception("Invalid data '{}' for column '{}'".format(value,column))
+            logger.get_event_logger().warning(
+                "Invalid data '{}' for column '{}'".format(value,column))
 
     if datatype== META.INT:
         if value.find(".")!=-1:
             raise Exception("For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
+            logger.get_event_logger().warning(
+                "For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
         try:
             int(value)
         except:
             raise Exception("For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
+            logger.get_event_logger().warning(
+                "For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
 
 
     if datatype== META.DOUBLE:
@@ -49,6 +59,8 @@ def checkdatatype(metadata,column,value):
             float(value)
         except:
             raise Exception("For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
+            logger.get_event_logger().warning(
+                "For column: {}\nExpecting: {}\nProvided: {}".format(column,datatype,value))
 
 def validatelength(metadata,column,value):
 
@@ -60,6 +72,8 @@ def validatelength(metadata,column,value):
 
     if givenlength > allowedlength:
         raise Exception("Length Exceeded: {}\nAllowed: {}\nProvided: {}".format(column,allowedlength,givenlength))
+        logger.get_event_logger().warning(
+            "Length Exceeded: {}\nAllowed: {}\nProvided: {}".format(column,allowedlength,givenlength))
 
 def transformvalue(metadata,dict,column):
     datatype = metadata.columntype(column)
@@ -97,6 +111,8 @@ def validatecondition(parsetree):
 
     if not metadata.hascolumn(column):
             raise Exception("Column '{}' does not exist in table '{}'".format(column,parsetree.table))
+            logger.get_event_logger().warning(
+                "Column '{}' does not exist in table '{}'".format(column,parsetree.table))
 
     checkdatatype(metadata,column,value)
 
@@ -110,3 +126,5 @@ def validatecolumnvaluepair(parsetree):
         column = pair.key
         if not metadata.hascolumn(column):
             raise Exception("Column '{}' does not exist in table '{}'".format(column, parsetree.table))
+            logger.get_event_logger().warning(
+                "Column '{}' does not exist in table '{}'".format(column, parsetree.table))

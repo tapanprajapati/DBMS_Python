@@ -3,6 +3,7 @@ import queryvalidator.update as validateupdate
 from datastructure.table import Table
 from transaction import helper
 from datastructure import constants
+import logger.querylogging as logger
 
 
 def execute(database, query,transaction = None):
@@ -16,6 +17,7 @@ def execute(database, query,transaction = None):
         if transaction == None:
             if lock != None:
                 raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+                logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
 
             table = Table(database, parsetree.table)
         else:
@@ -24,6 +26,7 @@ def execute(database, query,transaction = None):
             else:
                 if lock != None:
                     raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+                    logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
                 table = Table(database, parsetree.table, parsetree.columns)
                 helper.locktable(database, parsetree.table, constants.EXCLUSIVE)
                 transaction.accessed_tables[parsetree.table] = table
@@ -33,6 +36,7 @@ def execute(database, query,transaction = None):
         rows = table.update(parsetree.columnvaluepair, column, value, parsetree.conditiontype)
 
         print("{} Rows Updated".format(rows))
+        logger.get_event_logger().info("{} Rows Updated".format(rows))
         if transaction==None:
             table.save()
     except Exception as e:

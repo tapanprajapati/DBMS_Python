@@ -4,6 +4,7 @@ from datastructure.table import Table
 from prettytable import PrettyTable
 from transaction import helper
 from datastructure import constants
+import logger.querylogging as logger
 
 def execute(database,query,transaction=None):
     try:
@@ -15,6 +16,7 @@ def execute(database,query,transaction=None):
         if transaction==None:
             if lock == constants.EXCLUSIVE:
                 raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+                logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
             table = Table(database,parsetree.table,parsetree.columns)
         else:
             if parsetree.table in transaction.accessed_tables.keys():
@@ -26,7 +28,7 @@ def execute(database,query,transaction=None):
                     transaction.accessed_tables[parsetree.table] = table
                 else:
                     raise Exception("Table {} is locked by a transaction".format(parsetree.table))
-
+                    logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
 
         if parsetree.condition is not None:
             column = list(parsetree.condition.keys())[0]

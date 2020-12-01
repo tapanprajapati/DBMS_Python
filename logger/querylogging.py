@@ -11,6 +11,8 @@ def get_general_logger():
         fmt='%(asctime)s %(levelname)s %(name)s %(message)s'
     )
     json_handler.setFormatter(formatter)
+    if logger.hasHandlers():
+        logger.handlers.clear()
     logger.addHandler(json_handler)
     return logger
 
@@ -23,5 +25,7 @@ def get_event_logger():
         fmt='%(asctime)s %(levelname)s %(name)s %(message)s'
     )
     json_handler.setFormatter(formatter)
+    if logger.hasHandlers():
+        logger.handlers.clear()
     logger.addHandler(json_handler)
     return logger

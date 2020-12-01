@@ -2,6 +2,7 @@ import queryparser.drop as parsedrop
 import queryvalidator.drop as validatedrop
 from transaction import helper
 import os
+import logger.querylogging as logger
 
 def execute(database, query, transaction=None):
     try:
@@ -13,6 +14,7 @@ def execute(database, query, transaction=None):
 
         if lock !=None:
             raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+            logger.get_event_logger().warning("Table {} is locked by a transaction".format(parsetree.table))
 
         tablename = parsetree.table
         directory = database
@@ -23,6 +25,7 @@ def execute(database, query, transaction=None):
             file = directory+"/"+tablename+"_meta"+ext
             os.remove(file)
             print(f"The {tablename} has been successfully dropped")
+            logger.get_event_logger().info(f"The {tablename} has been successfully dropped")
 
     except Exception as e:
         print(e)
