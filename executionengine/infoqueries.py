@@ -19,7 +19,6 @@ def showtables(database):
     ptable = PrettyTable(["Tables"])
 
     for table in tables:
-        print(table)
         ptable.add_row([table])
     print(ptable)
 
