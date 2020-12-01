@@ -14,26 +14,23 @@ def execute(database,query,transaction = None):
         record = Record()
         record.data = parsetree.columnvaluepair
 
+        lock = helper.typeoflock(database, parsetree.table)
+
         if transaction==None:
+            if lock != None:
+                raise Exception("Table {} is locked by a transaction".format(parsetree.table))
             t = Table(database,parsetree.table)
             t.insert(record)
             t.save()
         else:
-            lock = helper.typeoflock(database, parsetree.table)
-            if transaction == None:
+            if parsetree.table in transaction.accessed_tables.keys():
+                table = transaction.accessed_tables[parsetree.table]
+            else:
                 if lock != None:
                     raise Exception("Table {} is locked by a transaction".format(parsetree.table))
                 table = Table(database, parsetree.table, parsetree.columns)
-            else:
-                if parsetree.table in transaction.accessed_tables.keys():
-                    table = transaction.accessed_tables[parsetree.table]
-                else:
-                    if lock == None:
-                        table = Table(database, parsetree.table, parsetree.columns)
-                        helper.locktable(database,parsetree.table,constants.EXCLUSIVE)
-                        transaction.accessed_tables[parsetree.table] = table
-                    else:
-                        raise Exception("Table {} is locked by a transaction".format(parsetree.table))
+                helper.locktable(database,parsetree.table,constants.EXCLUSIVE)
+                transaction.accessed_tables[parsetree.table] = table
             table.insert(record)
         print("1 Row inserted successfully")
     except Exception as e:

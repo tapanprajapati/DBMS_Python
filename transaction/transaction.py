@@ -1,5 +1,5 @@
 from datastructure.constants import Operation
-from executionengine import insert,select,delete
+from executionengine import insert,select,delete,update
 import transaction.helper as helper
 
 class Transaction():
@@ -13,7 +13,7 @@ class Transaction():
         elif operation == Operation.INSERT:
             insert.execute(self.database, query,self)
         elif operation == Operation.UPDATE:
-            # execution for update command
+            update.execute(self.database,query,self)
             pass
         elif operation == Operation.DELETE:
             delete.execute(self.database, query,self)

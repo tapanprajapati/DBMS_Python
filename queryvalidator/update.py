@@ -1,10 +1,19 @@
+from datastructure.supporting_structures import Metadata
 import queryvalidator.common_methods as validator
 
-sql = 'UPDATE test SET salary = 2000, first_name = Zongyu WHERE id = 1'
+def validatedata(parsetree):
+    metadata = Metadata(parsetree.database,parsetree.table)
+
+    for column in parsetree.columnvaluepair.keys():
+        if not metadata.hascolumn(column):
+            raise Exception("Column '{}' does not exist in table '{}'".format(column,parsetree.table))
+
+        validator.checkdatatype(metadata,column,parsetree.columnvaluepair[column])
+        validator.transformvalue(metadata,parsetree.columnvaluepair,column)
+        validator.validatelength(metadata,column,parsetree.columnvaluepair[column])
+
 
 def validate(parsetree):
     validator.validatetable(parsetree)
-    validator.validatecolumnvaluepair(parsetree)
+    validatedata(parsetree)
     validator.validatecondition(parsetree)
-
-

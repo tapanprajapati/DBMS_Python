@@ -2,9 +2,6 @@ import re
 from datastructure import constants
 from queryparser.parsetree import ParseTree
 
-sql = 'UPDATE test SET salary = 2000, first_name = Zongyu WHERE id = 1'
-
-
 def __gettablename(query):
     tablename_re = re.search(r'UPDATE .* SET', query).group()
     tablename = tablename_re.replace("UPDATE", "").replace("SET", "").strip()
@@ -15,11 +12,10 @@ def __getcolumnvaluepairs(query):
     columnvaluepairs_re = re.search(r'SET .* WHERE', query).group()
     columnvaluepairs_raw = columnvaluepairs_re.replace("SET", "").replace("WHERE", "").strip()
     columnvaluepairs = columnvaluepairs_raw.split(",")
-    pairlist = []
+    pairlist = {}
     for e in columnvaluepairs:
         condition = list(map(lambda x: x.strip(), e.split("=")))
-        pair = {condition[0]: condition[1]}
-        pairlist.append(pair)
+        pairlist[condition[0]]= condition[1]
     return pairlist
 
 
@@ -52,7 +48,5 @@ def parse(query):
     parsetree.condition, parsetree.conditiontype = __getcondition(query)
     return parsetree
 
-
-#print(list(parse(sql).condition.keys())[0])
 
 

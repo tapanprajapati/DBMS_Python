@@ -1,9 +1,10 @@
 import glob
 from datastructure.supporting_structures import Metadata
 from prettytable import PrettyTable
-from datastructure.constants import Metadata as META
+from datastructure.constants import Metadata as META, ROOT_DIRECTORY
 from queryvalidator import common_methods
 from queryparser import desc
+import os
 
 def gettables(database):
     tables = []
@@ -15,14 +16,23 @@ def gettables(database):
 
 def showtables(database):
     tables = gettables(database)
-    print(tables)
-
     ptable = PrettyTable(["Tables"])
 
     for table in tables:
         print(table)
         ptable.add_row([table])
     print(ptable)
+
+def showdatabases():
+
+    ptable = PrettyTable(["Databases"])
+
+    for database in os.listdir(ROOT_DIRECTORY):
+        if os.path.isdir(ROOT_DIRECTORY+"/"+database):
+            ptable.add_row([database])
+
+    print(ptable)
+
 
 def describe(database,query):
 

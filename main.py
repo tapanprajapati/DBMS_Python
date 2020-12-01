@@ -15,6 +15,8 @@ def startdatabasesystem():
 
 def authenticate():
     global user
+    user = 'Tapan'
+    return
     username = str(input("Username: "))
     if not authentication.userexist(username):
         print("User does not exist. Create a new account...")
@@ -40,6 +42,7 @@ def authenticate():
 def handle_queries():
     global user
     database = None
+    database = "dbms/NORTHWIND"
     active_transaction = None
     while True:
         query = str(input(">> "))
@@ -51,10 +54,16 @@ def handle_queries():
             break
         if "CREATE DATABASE" in query.upper():
             create.execute(database,query,user)
+            continue
         elif operation == Operation.GRANT:
             grant.execute(query,user)
+            continue
         elif operation == Operation.REVOKE:
             revoke.execute(query,user)
+            continue
+        elif operation == Operation.SHW_DTBS:
+            infoqueries.showdatabases()
+            continue
 
         if database is None and operation is not Operation.USE:
             print("Database not selected\n")
@@ -83,6 +92,8 @@ def handle_queries():
             database = use.execute(query, user)
         elif operation == Operation.SHW_TBLS:
             infoqueries.showtables(database)
+        elif operation == Operation.SHW_DTBS:
+            infoqueries.showdatabases()
         elif operation == Operation.DESC:
             infoqueries.describe(database, query)
         elif operation == Operation.STRT_TRNAS:

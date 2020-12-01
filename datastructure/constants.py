@@ -8,6 +8,7 @@ COMMIT = 'COMMIT'
 ROLLBACK = 'ROLLBACK'
 
 SHOW_TABLES = 'SHOW TABLES'
+SHOW_DATABASES = 'SHOW DATABASES'
 
 EXCLUSIVE = "X"
 SHARED = "S"
@@ -53,3 +54,4 @@ class Operation(enum.Enum):
     ROLLBACK = 'rlbk'
     DESC = 'desc'
     SHW_TBLS = 'shwtbls'
+    SHW_DTBS = 'shwdtbs'

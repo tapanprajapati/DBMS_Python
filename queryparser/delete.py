@@ -11,7 +11,7 @@ def validate_query(query):
 
 
 def extract_table_name(query):
-    if query.find("WHERE"):
+    if query.find("WHERE") !=-1:
         name = re.search('FROM(.*)WHERE', query)
         # print(f"the table name is : {name.group(1).strip()}")
         return name.group(1).strip(), True

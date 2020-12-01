@@ -3,6 +3,7 @@ import datastructure.constants as const
 
 def findoperation(query):
     operation = query.split(" ")[0].upper()
+    query = query.replace(";","")
 
     if operation == 'SELECT':
         return Operation.SELECT
@@ -35,4 +36,6 @@ def findoperation(query):
         return Operation.ROLLBACK
     if query.upper() == const.SHOW_TABLES:
         return Operation.SHW_TBLS
+    if query.upper() == const.SHOW_DATABASES:
+        return Operation.SHW_DTBS
     return None

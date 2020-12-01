@@ -39,7 +39,7 @@ def __getcolumns(database,query):
                 if key not in columns_names:
                     raise Exception("Primary Key {} is Unknown".format(key))
 
-            metadata["keys"]["primary"] = primarykey
+            metadata["keys"]["primary"].append(primarykey[0])
         elif pair[0] == "FOREIGN":
             parts = e.split()
             parts = list(map(lambda x: x.strip(), parts))
@@ -126,6 +126,7 @@ def parse(database,query,user):
         with open(database+"/"+tablename + "_meta.json", "w", encoding="utf-8") as file:
             file.write(json.dumps(columnlist, indent=4, ensure_ascii=False))
         file = open(database+"/"+tablename + ".json", "w", encoding="utf-8")
+        file.write("[]")
         file.close()
         print("Table {} Created Successfully".format(tablename))
     else:
