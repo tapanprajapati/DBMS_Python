@@ -15,8 +15,6 @@ def startdatabasesystem():
 
 def authenticate():
     global user
-    user = 'Tapan'
-    return
     username = str(input("Username: "))
     if not authentication.userexist(username):
         print("User does not exist. Create a new account...")
@@ -42,7 +40,6 @@ def authenticate():
 def handle_queries():
     global user
     database = None
-    database = "dbms/NORTHWIND"
     active_transaction = None
     while True:
         query = str(input(">> "))

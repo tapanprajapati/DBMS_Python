@@ -4,8 +4,7 @@ import os
 
 
 def parse(query,owner):
-    query = query.upper()
-    database = query.split()[1]
+    database = query.split()[1].upper()
     user = query.split()[2]
 
     if not authentication.userexist(user):

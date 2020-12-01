@@ -3,9 +3,7 @@ import os
 from accessuser import authentication
 
 def parse(query,owner):
-    # os.chdir(os.path.abspath(os.path.dirname(os.getcwd())))
-    query = query.upper()
-    database = query.split()[1]
+    database = query.split()[1].upper()
     user = query.split()[2]
 
     if not authentication.userexist(user):

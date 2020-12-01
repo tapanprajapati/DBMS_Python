@@ -119,35 +119,54 @@ class Table:
         replacementnode = self.__getbiggest(searchednode.left)
 
         if replacementnode is None:
-            if searchednode.right is None and searchednode != self.root:
-                if searchednode.parent.left is not None and searchednode.parent.left == searchednode:
-                    searchednode.parent.left = None
-                else:
-                    searchednode.parent.right = None
-                return
-            self.__swapparent(searchednode, searchednode.right)
+            if searchednode.right != None:
+                searchednode.right.parent = searchednode.parent
+
+            if searchednode !=self.root and searchednode.parent.right == searchednode:
+                searchednode.parent.right = searchednode.right
+            elif searchednode !=self.root and searchednode.parent.left == searchednode:
+                searchednode.parent.left = searchednode.right
+
+            if searchednode==self.root:
+                self.root = searchednode.right
             return
 
         self.__swap(searchednode, replacementnode)
 
     def __swap(self, node1, node2):
 
+        if node2==None and node1!=self.root:
+            if node1.parent.right == node1:
+                node1.parent.right = None
+
+            if node1.parent.left == node1:
+                node1.parent.left = None
+            return
+
+        if node2.parent.right == node2:
+            node2.parent.right = node2.left
+
+        elif node2.parent.left == node2:
+            node2.parent.left = node2.left
+
+        if node1!=self.root and node1.parent.right == node1:
+            node1.parent.right = node2
+
+        elif node1!=self.root and node1.parent.left == node1:
+            node1.parent.left = node2
+
         node2.parent = node1.parent
+        node2.left = node1.left
         node2.right = node1.right
 
-        if node1.left is not node2:
-            node2.parent.right = None
-            node2.left = node1.left
+        if node2.left!=None:
+            node2.left.parent = node2
 
-        if node1.right is not None:
-            node1.right.parent = node2
-        if node1.left is not None:
-            node1.left.parent = node2
+        if node2.right != None:
+            node2.right.parent = node2
 
-        if self.root == node1:
+        if node1==self.root:
             self.root = node2
-            self.root.parent = None
-
     def __swapparent(self, node1, node2):
 
         if node1 is None or node2 is None:

@@ -22,7 +22,7 @@ def execute(database, query, transaction=None):
             if parsetree.table in transaction.accessed_tables.keys():
                 table = transaction.accessed_tables[parsetree.table]
             else:
-                if lock !=None:
+                if lock ==None:
                     table = Table(database, parsetree.table, parsetree.columns)
                     helper.locktable(database, parsetree.table, constants.SHARED)
                     transaction.accessed_tables[parsetree.table] = table
