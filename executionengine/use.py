@@ -2,6 +2,7 @@ import os.path
 from queryparser import use
 from accessuser import authentication
 from datastructure.constants import ROOT_DIRECTORY
+import logger.querylogging as logger
 
 def execute(query,user):
     try:
@@ -12,6 +13,8 @@ def execute(query,user):
                 print("Does not have access to the database")
                 return None
             print("Database Selected: '{}'".format(database))
+            logger.get_general_logger().info("Database Selected: '{}'".format(database))
+            logger.get_event_logger().info("Database Selected: '{}'".format(database))
             return ROOT_DIRECTORY+"/"+database
         print("Database does not exist '{}'".format(database))
         return None

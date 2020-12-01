@@ -1,4 +1,5 @@
 import json, os, re
+import logger.querylogging as logger
 
 
 def generating_erd(database):
@@ -32,5 +33,6 @@ def generating_erd(database):
                 file.write("\n")
                 file.write(" -"*35)
         file.close()
+        logger.get_event_logger().info(f"Generated ERD")
     except Exception as e:
         print(e)

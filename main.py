@@ -6,6 +6,7 @@ from datastructure.constants import Operation, ROOT_DIRECTORY
 from transaction.transaction import Transaction
 import entityrelationshipdiagram.erd as erd
 import logger.querylogging as logger
+import time
 
 global user
 
@@ -80,6 +81,7 @@ def handle_queries():
             continue
 
         logger.get_event_logger().info(f"The query entered is : {query}")
+        start_time = time.time()
         if operation == Operation.SELECT:
             select.execute(database, query)
         elif operation == Operation.INSERT:
@@ -114,6 +116,9 @@ def handle_queries():
             print("Invalid Query")
             logger.get_event_logger().error(f"The query entered is invalid")
 
+        end_time = time.time()
+        total_time = end_time - start_time
+        logger.get_general_logger().info(f"The total execution time of the query \"{query}\" is : {total_time}")
         print()
 
 
