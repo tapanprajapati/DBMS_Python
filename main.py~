@@ -18,26 +18,26 @@ def startdatabasesystem():
 
 def authenticate():
     global user
-    user = str(input("Username: "))
-    if not authentication.userexist(user):
+    username = str(input("Username: "))
+    if not authentication.userexist(username):
         print("User does not exist. Create a new account...")
         password = getpass.getpass("Enter Password: ")
         re_password = getpass.getpass("Confirm Password: ")
 
         if password==re_password:
-            authentication.signup(user, password)
+            authentication.signup(username, password)
             print("Signup Successful")
         else:
             print("Passwords Do Not Match!!! Try Again")
-            exit(0)
     else:
         password = getpass.getpass("Enter Password: ")
-        valid = authentication.authenticateuser(user, password)
+        valid = authentication.authenticateuser(username, password)
         if not valid:
             print('Invalid Password')
             exit(0)
         else:
             print("Welcome!")
+            user = username
 
 
 def handle_queries():
